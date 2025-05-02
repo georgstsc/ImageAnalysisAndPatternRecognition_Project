@@ -407,3 +407,8 @@ ctranspath.py
 data/data_lab_03/part_02/dhmc*
 convert.py 
 data/project/
+
+# Project data directories to ignore
+project/src/data/dataset_project_iapr2025/
+project/src/data/synthetic_CNN/
+project/src/data/synthetic_UNET/
