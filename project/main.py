@@ -8,7 +8,8 @@ import torchvision.transforms as T
 from collections import Counter
 from tqdm import tqdm
 import cv2
-from src.scripts import ChocolateClassifier, UNet
+from src.scripts.ChocolateClassifier import ChocolateClassifier
+from src.scripts.UNet import UNet
 
 
 # --- Load fine-tuned classifier ---
