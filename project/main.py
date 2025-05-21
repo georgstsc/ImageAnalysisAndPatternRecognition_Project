@@ -11,7 +11,6 @@ import cv2
 from src.scripts.ChocolateClassifier import ChocolateClassifier
 from src.scripts.UNet import UNet
 
-
 # --- Load fine-tuned classifier ---
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 classifier = ChocolateClassifier().to(device)
@@ -53,7 +52,7 @@ label_name_map = {
 
 # --- Thresholds ---
 MIN_BLOB_AREA = 200
-MAX_BLOB_AREA = 1200
+MAX_BLOB_AREA = 1000
 
 # --- Transforms ---
 resize = T.Resize((256, 256))
@@ -182,6 +181,7 @@ for name in tqdm(test_img_names, desc="Processing test images"):
                         mapped_label = label_name_map.get(label_name)
                         if mapped_label:
                             label_counts[mapped_label] += 1
+
 
     row = {"id": int(name.replace("L", "").replace(".JPG", ""))}
     row.update({label: label_counts.get(label, 0) for label in label_order})
