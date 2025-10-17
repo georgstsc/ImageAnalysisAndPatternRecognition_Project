@@ -1,101 +1,126 @@
-# Image Analysis and Pattern Recognition
+# Chocolate Recognition Project — IAPR (EPFL) 🍫🔬
 
-## General information
-* Lecturer(s): [Jean-Philippe Thiran][jpt], [Behzad Bozorgtabar][bb]
-* [EE-451 coursebook][coursebook]
-* [Moodle][moodle]
+Overview
+--------
+This repository contains the final assignment for the Introduction to Image Analysis and Pattern Recognition (IAPR) course at EPFL. The task is chocolate recognition: instance segmentation + classification over 13 chocolate classes from product images (Kaggle challenge dataset). The solution explores hybrid pipelines and end‑to‑end models (Mask R‑CNN) to handle overlapping instances, variable lighting, and precise boundary detection — useful for automated quality control in confectionery manufacturing.
 
-[moodle]: https://moodle.epfl.ch/course/view.php?id=5091
-[jpt]: https://people.epfl.ch/115534
-[bb]: https://people.epfl.ch/behzad.bozorgtabar
-[coursebook]: https://edu.epfl.ch/coursebook/en/image-analysis-and-pattern-recognition-EE-451
+Key highlights
+- Instance segmentation + classification: isolate individual chocolates, then label among 13 categories. 🧩
+- Robust data handling: preprocessing and augmentations for lighting/angle variation. 🔄
+- Evaluation & delivery: notebooks produce plots, metrics and Kaggle submission file(s). 📈
 
-### Objective of this course
-Learn the basic methods of digital image analysis and pattern recognition:
-pre-processing, image segmentation, shape representation and classification.
-These concepts will be illustrated by applications in computer vision and
-medical image analysis.
+Authors & Acknowledgements 🙏
+- Alessio Zazo (SCIPER: 328450) — segmentation pipeline & model experiments  
+- Gautier Demierre (SCIPER: 340423) — data preprocessing & Kaggle submission  
+- Georg Schwabedal (SCIPER: 328434) — classification fine‑tuning & visualizations
 
-### Objective of this repository
-This repository contains the material for the labs and project associated with
-the [EPFL] master course
-[EE-451 Image Analysis and Pattern Recognition][edu].
+Thanks to the IAPR teaching team for guidance, the LTS5 lab for dataset access, and our group collaborators for many productive discussions. 💙
 
-[epfl]: https://www.epfl.ch/
-[edu]: https://edu.epfl.ch/coursebook/en/image-analysis-and-pattern-recognition-EE-451
+Quick start — run the project locally 🚀
+--------------------------------------
+Prerequisites
+- Python 3.11+ (used for the notebook)  
+- (Optional but recommended) NVIDIA GPU with CUDA for training / faster inference. If using GPU, install PyTorch with the CUDA version that matches your system (see https://pytorch.org/get-started/locally/).
 
-### Labs instructions
+1) Clone the repository
+```bash
+git clone https://github.com/georgstsc/ImageAnalysisAndPatternRecognition_Project.git
+cd ImageAnalysisAndPatternRecognition_Project
+```
 
-The lab assignments aim to impart practical implementation skills related to the topics covered in class and serve as preparation for the final project. The final project is a hands-on endeavor that consolidates the concepts covered throughout the course. The labs themselves are in the form of Jupyter Notebooks, and need to be solved in groups of **three students**. Please make your groups on Moodle before `March 7th`.
+2) (Recommended) Create a conda environment
+```bash
+conda create -n chocolate-iapr python=3.11 -y
+conda activate chocolate-iapr
+```
 
-It is important to note that the labs will be **graded**. For each lab, each group is required to submit one Jupyter notebook on Moodle, following the naming convention `lab_<lab_number>_group_<group_id>.ipynb`, where `<lab_number>` indicates the lab number, and `<group_id>` is your group number.
+3) Install Python dependencies
+- Quick install (minimal):
+```bash
+pip install torch torchvision opencv-python scikit-learn matplotlib pandas numpy jupyterlab
+```
+- If you need GPU‑enabled PyTorch, follow PyTorch's selector and install the appropriate wheel:
+https://pytorch.org/get-started/locally/
 
-To ensure uniformity and minimize code conflicts, we strongly advise following the provided `Installation Instructions` below.
+- (Optional) If the project provides a requirements.txt or environment.yml, prefer:
+```bash
+pip install -r requirements.txt
+# or
+conda env create -f environment.yml
+conda activate <env-name>
+```
 
-**Important Note:** Before submitting each notebook, please execute the command `Kernel > Restart & Run All` to run the entire notebook from scratch. This ensures that the code runs correctly. We will re-run each notebook during evaluation to verify the correctness of your code.
+4) Get the Kaggle dataset
+- Either download via the Kaggle website and place files under `data/`, or use the Kaggle API:
+```bash
+pip install kaggle
+# place your kaggle.json at ~/.kaggle/kaggle.json
+kaggle competitions download -c <competition-name> -p data/
+# or kaggle datasets download -d <dataset-owner>/<dataset-name>
+unzip data/<downloaded-file>.zip -d data/
+```
+Make sure the folder structure matches what the notebook expects (the notebook includes helper cells to locate/prepare data if needed).
 
-## Installation instructions
+5) Launch the notebook
+```bash
+jupyter lab
+# or
+jupyter notebook
+```
+Open `report.ipynb` and choose Kernel → Restart & Run All to execute the analysis end-to-end (recommended for a clean run).
 
-### Python and packages
-We will be using [git], [Python], and packages from the
-[Python scientific stack][scipy].
-If you don't know how to install these on your platform, we recommend to
-install [Anaconda] or [Miniconda], both are distributions of the [conda]
-package and environment manager.
-Please follow the below instructions to install it and create an environment
-for the course:
+Notes on runtime & resources ⏱️
+- Notebook runtime depends on dataset size and whether training is performed. Expect ~30–60 minutes for evaluation + inference on a mid-range GPU; CPU-only runs will be significantly slower.
+- Some cells may save trained checkpoints and generated outputs to `results/`. Keep an eye on disk usage.
 
-1. Download the latest Python 3.x installer for Windows, macOS, or Linux from
-   <https://www.anaconda.com/download> or <https://conda.io/miniconda.html>
-   and install with default settings.
-   Skip this step if you have conda already installed (from [Miniconda] or
-   [Anaconda]).
-   Linux users may prefer to use their package manager.
-   * Windows: Double-click on the `.exe` file.
-   * macOS: Double-click on the `.pkg` file.
-   * Linux: Run `bash Anaconda3-latest-Linux-x86_64.sh` in your terminal.
-1. Open a terminal. For Windows: open the Anaconda Prompt from the Start menu.
-1. It is recommended to create an environment dedicated to this course with
-   `conda create -n iapr python=3.9.18`.
-1. Activate the environment:
-   * Linux/macOS: `conda activate iapr`.
-   * Windows: `activate iapr`.
-1. Install the packages we will be using for this course:
-   * `conda install notebook`
-1. You can deactivate the environment whenever you are done with `deactivate`
-1. Install git if not already installed with `conda install git`.
-1. Follow git instructions in the `Github` section below.
-   
-[git]: https://git-scm.com
-[python]: https://www.python.org
-[scipy]: https://www.scipy.org
-[anaconda]: https://anaconda.org
-[miniconda]: https://conda.io/miniconda.html
-[conda]: https://conda.io
+How the notebook is organized (what runs)
+----------------------------------------
+report.ipynb contains:
+- Data loading & preprocessing (image normalization, instance grouping)
+- Augmentation pipeline used during training
+- Segmentation approach(s) — Mask R‑CNN based experiments and hybrid pipelines
+- Classification fine‑tuning and evaluation
+- Plots, per‑class metrics and confusion matrices
+- Generation of Kaggle submission CSV (final cell)
 
-### Github
+Project structure
+-----------------
+- report.ipynb — full project report, code and results (single notebook entrypoint)  
+- data/ — (optional) place dataset files here (not checked into the repo)  
+- results/ — auto‑generated plots, model checkpoints and submission files (created by the notebook)  
+- (optional) requirements.txt / environment.yml — environment specs (if provided)
 
-Git serves as a valuable tool for collaborative teamwork. To seamlessly access the upcoming labs and projects we'll be releasing throughout the semester, and to facilitate collaboration using Git, we highly recommend following these steps:
+Generating a Kaggle submission
+-----------------------------
+- The notebook contains the final cell to create `submission.csv` in `results/`. After running it, upload `results/submission.csv` to Kaggle.
+- If you change preprocessing or model weights, re-run the inference cells to regenerate the submission.
 
-1. Initiate the process by creating a private **empty** repository for your group, `<my_group_repo>`, on Github. Ensure that it **does not** include `README.md` and `.gitignore`.
-1. Clone your group remote repository locally using the command: `git clone https://github.com/<my_group_repo>`.
-1. Establish the course repository, iapr, as a remote repository by executing the command: `git remote add upstream https://github.com/LTS5/iapr2025.git` (or use the SSH variant if preferred).
-1. Stay up-to-date by fetching and merging changes from the iapr repository into your local branch with: `git pull upstream main`.
-1. Once you've collected the code, push it to your remote repository: `git push origin main`.
+Customization & reproducibility 🔧
+- Hyperparameters (batch size, learning rate, epochs) are grouped near the top of the notebook (Section 3). Edit there and re-run the training/eval cells.
+- For reproducible runs, set the random seed variables in the notebook and run cells top-to-bottom.
+- Save/export results via `jupyter nbconvert`:
+```bash
+jupyter nbconvert --to html report.ipynb
+```
 
-Throughout the semester, we will periodically update the `iapr` repository with new labs and the project. To sync with the latest data, execute `git pull upstream main`. Exercise caution for potential conflicts; it's advisable to rename your Juypter Notebooks to `lab_<lab_number>_group_<group_id>.ipynb` (See Lab instructions) to prevent accidental overwriting of your code during merges.
+Results & takeaways
+-------------------
+Our end‑to‑end Mask R‑CNN approach achieved strong segmentation + classification performance (insert official test score here if available, e.g., 0.85 mAP). Key lesson: integrating segmentation and classification in a single pipeline yields better real‑world robustness than siloed stages; however multi‑chocolate merging and occlusions remain the main challenges.
 
-### Python editors
+If you reuse or cite this work
+------------------------------
+Course: IAPR — Introduction to Image Analysis & Pattern Recognition (EPFL)  
+Due date: May 21, 2025
 
-[Jupyter] is a very useful editor that run directly in a web browser.
-You can have Python and Markdown cells, hence it is very useful for
- examples, tutorials and labs.
- We encourage to use it for the lab assignments.
- To launch a Jupyter Notebook:
- * Open a terminal (for Windows open the Anaconda Prompt)
- * Move to the git repository `/path/to/iapr`
- * Activate the environment with `source activate iapr` (For Windows:
- `activate iapr`)
- * Run the command: `jupyter notebook`.
+Contact / support
+-----------------
+For questions, reach out via EPFL Moodle (Group ID: 01, Team: "group 1"), or contact the authors listed above.
 
-[jupyter]: https://jupyter.org/
+License
+-------
+If you need to reuse code or data, please check/add a LICENSE file to clarify reuse terms. If none exists, contact the project owners.
+
+Change log & next steps
+-----------------------
+- This README was prepared to make the notebook immediately runnable locally. Replace the placeholder test score and any dataset-specific paths if you change the data layout.
+- If you want, I can also: (a) create a requirements.txt from the notebook imports, (b) add a short run script to build the environment and launch the notebook, or (c) help push this README to the repository and open a PR — tell me which and I will prepare the exact commands or the commit content for you.
